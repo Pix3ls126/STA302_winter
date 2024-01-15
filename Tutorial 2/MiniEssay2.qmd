@@ -1,0 +1,82 @@
+---
+title: "Mini essay 2"
+author: "Aaron Liu"
+date: "2024/01/15"
+format: pdf
+---
+
+
+```{r}
+
+#### Work space setup ####
+#| echo: false
+#| warning: false
+#install.packages("tidyverse")
+#install.packages("janitor")
+#install.packages("opendatatoronto")
+
+library("janitor")
+library("knitr")
+library("lubridate")
+library("opendatatoronto")
+library("tidyverse")
+```
+## Getting the Data
+```{r}
+#### Reading the Data ####
+pkg <- 
+  search_packages('Real Estate Asset Inventory', limit = 50)
+
+pkgs <- 
+  list_package_resources(pkg$id)
+
+data <-
+  get_resource(pkgs[3:3,1:2]$id)
+
+write_csv(
+  x = data,
+  file = "toronto_real_esate_asset_inventory.csv"
+)
+
+```
+
+## Cleaning the Data
+```{r}
+### Cleaning the Data
+raw_toronto_real_esate_asset_inventory <- 
+  read_csv(
+    file = "toronto_real_esate_asset_inventory.csv",
+    show_col_types = FALSE
+  )
+cleaned_toronto_real_esate_asset_inventory <-
+  clean_names(raw_toronto_real_esate_asset_inventory)
+
+cleaned_toronto_real_esate_asset_inventory <-
+  cleaned_toronto_real_esate_asset_inventory |> 
+  select(
+    owner
+  )
+cleaned_toronto_real_esate_asset_inventory |>
+  count(owner)
+write_csv(
+  x = cleaned_toronto_real_esate_asset_inventory,
+  file = "cleaned_toronto_real_esate_asset_inventory.csv"
+)
+
+```
+
+## Creating Graph
+```{r}
+cleaned_toronto_real_esate_asset_inventory <- 
+  read_csv(
+    file = "cleaned_toronto_real_esate_asset_inventory.csv",
+    show_col_types = FALSE
+  )
+
+cleaned_toronto_real_esate_asset_inventory |>
+  ggplot(aes(x = owner)) +
+  geom_bar() +
+  theme_minimal() + # Make the theme neater
+  labs(x = "Asset Owner", y = "Number of Assets", title = 'Toronto Real Estate Assets by Ownership') + # Make labels more meaningful 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
